@@ -1,21 +1,18 @@
 import { createConfig, lintFromString } from '@redocly/openapi-core';
+import path from 'path';
 
 export async function validateYamlContent(yamlContent: string) {
     try {
         console.log(`🔍 Validating YAML content...`);
 
         // Initialize Redocly configuration
-        const config = await createConfig(
-            {
-              extends: ['recommended']
-            }
-          );
+        // Load the external .redocly.yaml configuration
+        const configPath = path.resolve(__dirname, '../custom-rules.redocly.yaml');
+        const config = await createConfig({extends: ['recommended']}, { configPath });
 
         // Run OpenAPI linting
         const lintResults = await lintFromString({
             source:yamlContent,
-            // optionally pass path to the file for resolving $refs and proper error locations
-            //absoluteRef: 'optional/path/to/openapi.yaml',
             config,
           });
 
