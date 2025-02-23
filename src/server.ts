@@ -20,7 +20,6 @@ app.post('/validate', upload.single('file'), async (req: Request, res: Response)
     }
 
     const yamlContent = req.file.buffer.toString('utf-8');
-    console.log("yamlContent: "+yamlContent); 
 
     try {
         const result = await validateYamlContent(yamlContent);
