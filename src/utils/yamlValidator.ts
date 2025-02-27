@@ -1,14 +1,29 @@
 import { createConfig, lintFromString } from '@redocly/openapi-core';
-import path from 'path';
-
+const errorCodesRequired = require('../plugins/rules/macro/errorCodesRequired.js');
+const errorSchema = require('../plugins/rules/macro/errorSchema.js');
 export async function validateYamlContent(yamlContent: string) {
     try {
         console.log(`🔍 Validating YAML content...`);
 
-        // Initialize Redocly configuration
-        // Load the external .redocly.yaml configuration
-        const configPath = path.resolve(__dirname, '../custom-rules.redocly.yaml');
-        const config = await createConfig({extends: ['recommended']}, { configPath });
+        const config = await createConfig({
+            extends: ['recommended'],
+            plugins: [
+              {
+                id: 'MacroTemplate',
+                rules: {
+                  oas3: {
+                    errorSchema: errorSchema,
+                    errorCodesRequired: errorCodesRequired,
+                  }
+                }
+              }
+            ],
+            // enable rule
+            rules: {
+              'MacroTemplate/errorSchema': 'error',
+              'MacroTemplate/errorCodesRequired': 'error'
+            }
+          });
 
         // Run OpenAPI linting
         const lintResults = await lintFromString({
@@ -20,7 +35,6 @@ export async function validateYamlContent(yamlContent: string) {
             console.log('✅ YAML is valid!');
             return { valid: true, errors: [], warnings: [] };
         } else {
-
             // Process and format the results
             const formattedResults = lintResults.map((result) => ({
                 ruleId: result.ruleId,
@@ -32,7 +46,6 @@ export async function validateYamlContent(yamlContent: string) {
                 }))
             }));
 
-            console.error('❌ YAML validation errors:', formattedResults);
             return { valid: false, errors: formattedResults };
         }
     } catch (error) {
