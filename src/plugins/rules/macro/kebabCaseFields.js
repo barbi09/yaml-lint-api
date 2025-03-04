@@ -63,14 +63,28 @@ function validateSchemaProperties(schema, ctx, contextName) {
     const refPath = schema.$ref.replace("#/components/schemas/", "");
     console.log("refPath", refPath);
 
-    let resolvedSchema = resolveSchema(refPath, ctx);
+    let resolvedSchema = ctx.resolve(refPath);
+    console.log("resolvedSchema", resolvedSchema);
 
-    if (resolvedSchema) {
+    // Ensure resolvedSchema.node is an object and not just a string
+    if (resolvedSchema && resolvedSchema.node && typeof resolvedSchema.node === "object") {
       console.log(`✅ Successfully resolved schema: ${refPath}`);
-      validateSchemaProperties(resolvedSchema, ctx, contextName);
+      validateSchemaProperties(resolvedSchema.node, ctx, contextName);
       return;
     } else {
-      console.log(`❌ Failed to resolve schema: ${refPath}`);
+      console.log(`❌ Failed to resolve schema with ctx.resolve(), trying components.schemas: ${refPath}`);
+
+      // Fallback: Manually fetch from components.schemas
+      if (ctx.root && ctx.root.components && ctx.root.components.schemas) {
+        const fallbackSchema = ctx.root.components.schemas[refPath];
+        if (fallbackSchema && typeof fallbackSchema === "object") {
+          console.log(`✅ Successfully fetched schema manually from components.schemas: ${refPath}`);
+          validateSchemaProperties(fallbackSchema, ctx, contextName);
+          return;
+        }
+      }
+
+      console.log(`❌ Failed to find schema: ${refPath} in components.schemas`);
     }
     return;
   }
@@ -100,28 +114,6 @@ function validateSchemaProperties(schema, ctx, contextName) {
       validateSchemaProperties(nestedSchema, ctx, `${contextName} -> ${propertyName}`);
     }
   });
-}
-
-/**
- * Resolves the schema reference correctly.
- */
-function resolveSchema(refPath, ctx) {
-  // Try using ctx.resolve()
-  let resolvedSchema = ctx.resolve(refPath);
-  if (resolvedSchema && resolvedSchema.node && typeof resolvedSchema.node === "object") {
-    return resolvedSchema.node;
-  }
-
-  // If ctx.resolve() fails, try fetching from components.schemas manually
-  if (ctx.root && ctx.root.components && ctx.root.components.schemas) {
-    const schemas = ctx.root.components.schemas;
-
-    if (schemas && schemas[refPath] && typeof schemas[refPath] === "object") {
-      return schemas[refPath];
-    }
-  }
-
-  return null;
 }
 
 /**

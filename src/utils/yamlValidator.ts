@@ -26,7 +26,8 @@ export async function validateYamlContent(yamlContent: string) {
             rules: {
               'MacroTemplate/errorSchema': 'error',
               'MacroTemplate/errorCodesRequired': 'error',
-              'MacroTemplate/kebabCaseFields': 'error'
+              'MacroTemplate/kebabCaseFields': 'error',
+              'paths-kebab-case': 'error'
             }
           });
 
