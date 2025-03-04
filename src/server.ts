@@ -13,7 +13,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 app.use(cors());
 
 // POST endpoint to receive a YAML file
-app.post('/validate', upload.single('file'), async (req: Request, res: Response): Promise<void> => {
+app.post('/yaml/validate', upload.single('file'), async (req: Request, res: Response): Promise<void> => {
     if (!req.file) {
         res.status(400).json({ error: 'No file uploaded' });
         return;
