@@ -21,7 +21,8 @@ export async function validateYamlContent(yamlContent: string) {
             // enable rule
             rules: {
               'MacroTemplate/errorSchema': 'error',
-              'MacroTemplate/errorCodesRequired': 'error'
+              'MacroTemplate/errorCodesRequired': 'error',
+              'paths-kebab-case': 'error'
             }
           });
 
