@@ -1,6 +1,9 @@
 import { createConfig, lintFromString } from '@redocly/openapi-core';
 const errorCodesRequired = require('../plugins/rules/macro/errorCodesRequired.js');
 const errorSchema = require('../plugins/rules/macro/errorSchema.js');
+const kebabCaseFields = require('../plugins/rules/macro/kebabCaseFields.js');
+
+
 export async function validateYamlContent(yamlContent: string) {
     try {
         console.log(`🔍 Validating YAML content...`);
@@ -14,6 +17,7 @@ export async function validateYamlContent(yamlContent: string) {
                   oas3: {
                     errorSchema: errorSchema,
                     errorCodesRequired: errorCodesRequired,
+                    kebabCaseFields: kebabCaseFields,
                   }
                 }
               }
@@ -21,7 +25,8 @@ export async function validateYamlContent(yamlContent: string) {
             // enable rule
             rules: {
               'MacroTemplate/errorSchema': 'error',
-              'MacroTemplate/errorCodesRequired': 'error'
+              'MacroTemplate/errorCodesRequired': 'error',
+              'MacroTemplate/kebabCaseFields': 'error'
             }
           });
 
