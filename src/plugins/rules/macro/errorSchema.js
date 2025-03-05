@@ -1,11 +1,9 @@
-console.log("✅ Loading ErrorSchema rule...");
 module.exports = errorSchema;
 
 function errorSchema() {
   return {
     Components: {
       enter(components, ctx) {
-        console.log("🔍 Running ErrorSchema validation...");
 
         if (!components.schemas || !components.schemas.error) {
           ctx.report({

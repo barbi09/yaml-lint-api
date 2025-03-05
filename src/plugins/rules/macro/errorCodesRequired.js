@@ -4,7 +4,6 @@ function errorCodeRequired() {
   return {
     Operation: {
       enter(operation, ctx) {
-        console.log(`🔍 Running ErrorCodeRequired on: ${operation.operationId}`);
 
         if (!operation.responses) {
           return;

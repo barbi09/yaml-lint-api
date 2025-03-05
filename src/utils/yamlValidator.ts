@@ -2,6 +2,7 @@ import { createConfig, lintFromString } from '@redocly/openapi-core';
 const errorCodesRequired = require('../plugins/rules/macro/errorCodesRequired.js');
 const errorSchema = require('../plugins/rules/macro/errorSchema.js');
 const kebabCaseFields = require('../plugins/rules/macro/kebabCaseFields.js');
+const operationExamples = require('../plugins/rules/macro/operationExamples.js');
 
 
 export async function validateYamlContent(yamlContent: string) {
@@ -18,16 +19,18 @@ export async function validateYamlContent(yamlContent: string) {
                     errorSchema: errorSchema,
                     errorCodesRequired: errorCodesRequired,
                     kebabCaseFields: kebabCaseFields,
+                    operationExamples: operationExamples
                   }
                 }
               }
             ],
             // enable rule
             rules: {
+              'paths-kebab-case': 'error',
               'MacroTemplate/errorSchema': 'error',
               'MacroTemplate/errorCodesRequired': 'error',
               'MacroTemplate/kebabCaseFields': 'error',
-              'paths-kebab-case': 'error'
+              'MacroTemplate/operationExamples': 'error'
             }
           });
 
