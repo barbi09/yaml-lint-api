@@ -3,6 +3,7 @@ const errorCodesRequired = require('../plugins/rules/macro/errorCodesRequired.js
 const errorSchema = require('../plugins/rules/macro/errorSchema.js');
 const kebabCaseFields = require('../plugins/rules/macro/kebabCaseFields.js');
 const operationExamples = require('../plugins/rules/macro/operationExamples.js');
+const validFormat = require('../plugins/rules/macro/validFormat.js');
 
 
 export async function validateYamlContent(yamlContent: string) {
@@ -19,7 +20,8 @@ export async function validateYamlContent(yamlContent: string) {
                     errorSchema: errorSchema,
                     errorCodesRequired: errorCodesRequired,
                     kebabCaseFields: kebabCaseFields,
-                    operationExamples: operationExamples
+                    operationExamples: operationExamples,
+                    validFormat: validFormat
                   }
                 }
               }
@@ -30,7 +32,8 @@ export async function validateYamlContent(yamlContent: string) {
               'MacroTemplate/errorSchema': 'error',
               'MacroTemplate/errorCodesRequired': 'error',
               'MacroTemplate/kebabCaseFields': 'error',
-              'MacroTemplate/operationExamples': 'error'
+              'MacroTemplate/operationExamples': 'error',
+              'MacroTemplate/validFormat': 'error'
             }
           });
 
