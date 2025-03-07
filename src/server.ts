@@ -4,7 +4,7 @@ import cors from 'cors';
 import { validateYamlContent } from './utils/yamlValidator';
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Configure multer for file upload
 const upload = multer({ storage: multer.memoryStorage() });
