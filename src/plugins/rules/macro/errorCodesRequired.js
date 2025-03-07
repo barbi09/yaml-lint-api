@@ -22,7 +22,6 @@ function errorCodeRequired() {
           "504": "#/components/responses/gatewayTimeout"
         };
 
-
         const definedResponses = Object.keys(operation.responses);
 
         // 🔍 1. Check for missing expected error codes
@@ -34,7 +33,7 @@ function errorCodeRequired() {
             ctx.report({
               message: `Missing required response code ${expectedCode}. Every operation must define '${expectedErrorRefs[expectedCode]}'.`,
               location: {
-                pointer: humanReadableLocation // ✅ Correct location format
+                pointer: humanReadableLocation
               }
             });
           }
@@ -43,17 +42,26 @@ function errorCodeRequired() {
         // 🔍 2. Validate that all present error codes match their expected references
         definedResponses.forEach(statusCode => {
           if (expectedErrorRefs[statusCode]) { // Only validate defined error codes
-            const expectedRef = expectedErrorRefs[statusCode];
-            const actualRef = operation.responses[statusCode].$ref || 'undefined';
+            let expectedRef = expectedErrorRefs[statusCode];
+            let actualRef = operation.responses[statusCode].$ref || null;
 
-            if (actualRef !== expectedRef) {
+            // 🔍 Check nested schema reference inside content -> application/json -> schema
+            if (!actualRef && operation.responses[statusCode].content &&
+                operation.responses[statusCode].content["application/json"] &&
+                operation.responses[statusCode].content["application/json"].schema &&
+                operation.responses[statusCode].content["application/json"].schema.$ref) {
+              actualRef = operation.responses[statusCode].content["application/json"].schema.$ref;
+              expectedRef = "#/components/schemas/error";
+            }
+
+            if (!actualRef || actualRef !== expectedRef) {
               const jsonPointer = ctx.location.child(['responses', statusCode]).pointer;
               const humanReadableLocation = jsonPointer.replace(/~1/g, '/');
 
               ctx.report({
-                message: `Response code ${statusCode} must reference '${expectedRef}', but found '${actualRef}'.`,
+                message: `Response code ${statusCode} must reference '${expectedRef}', but found '${actualRef || "undefined"}'.`,
                 location: {
-                  pointer: humanReadableLocation // ✅ Correct location format
+                  pointer: humanReadableLocation
                 }
               });
             }
@@ -66,7 +74,7 @@ function errorCodeRequired() {
               ctx.report({
                 message: `Response code ${statusCode} is not allowed.`,
                 location: {
-                  pointer: humanReadableLocation // ✅ Correct location format
+                  pointer: humanReadableLocation
                 }
               });
             }

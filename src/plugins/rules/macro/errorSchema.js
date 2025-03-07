@@ -62,6 +62,7 @@ function errorSchema() {
 
     Response: {
       enter(response, ctx) {
+
         // Only check responses that match expected error status codes
         const expectedErrorRefs = {
           "400": "#/components/responses/badRequest",
@@ -81,11 +82,19 @@ function errorSchema() {
           return; // Skip checking non-error responses
         }
 
-        if (!response.content || !response.content["application/json"] || !response.content["application/json"].schema) {
-          return;
-        }
+        let schemaRef = null;
 
-        const schemaRef = response.content["application/json"].schema.$ref;
+        // 🔍 Check if response directly references an expected error response
+        if (response.$ref) {
+          schemaRef = response.$ref;
+        } else if (response.content && response.content["application/json"]) {
+          const jsonContent = response.content["application/json"];
+          if (jsonContent.schema && jsonContent.schema.$ref) {
+            schemaRef = jsonContent.schema.$ref;
+          }
+        } 
+
+        // 🔍 Ensure error responses reference `#/components/schemas/error`
         if (!schemaRef || schemaRef !== "#/components/schemas/error") {
           const jsonPointer = ctx.location.child(["content", "application/json", "schema"]).pointer.replace(/~1/g, "/");
           ctx.report({
