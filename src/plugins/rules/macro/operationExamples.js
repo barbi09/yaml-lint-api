@@ -37,7 +37,7 @@ function validateRequestBodyExamples(operation, ctx) {
  * Validates that success responses (`200`, `201`, etc.) contain at least one example (excluding "none") and have "none".
  */
 function validateResponseExamples(operation, ctx) {
-  const successStatusCodes = ["200", "201", "202", "204"]; // Define success cases
+  const successStatusCodes = ["200", "201", "202"]; // Define success cases
 
   Object.entries(operation.responses).forEach(([statusCode, response]) => {
     if (!successStatusCodes.includes(statusCode)) return; // Ignore error responses
