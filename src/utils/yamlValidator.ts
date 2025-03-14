@@ -5,6 +5,7 @@ const kebabCaseFields = require('../plugins/rules/macro/kebabCaseFields.js');
 const operationExamples = require('../plugins/rules/macro/operationExamples.js');
 const validFormat = require('../plugins/rules/macro/validFormat.js');
 const validateDateFields = require('../plugins/rules/macro/validateDateFields.js');
+const validateBooleanFields = require('../plugins/rules/macro/validateBooleanFields.js');
 
 export async function validateYamlContent(yamlContent: string) {
     try {
@@ -22,7 +23,8 @@ export async function validateYamlContent(yamlContent: string) {
                     kebabCaseFields: kebabCaseFields,
                     operationExamples: operationExamples,
                     validFormat: validFormat,
-                    validateDateFields: validateDateFields
+                    validateDateFields: validateDateFields,
+                    validateBooleanFields: validateBooleanFields
                   }
                 }
               }
@@ -36,7 +38,8 @@ export async function validateYamlContent(yamlContent: string) {
               'MacroTemplate/kebabCaseFields': 'error',
               'MacroTemplate/operationExamples': 'error',
               'MacroTemplate/validFormat': 'error',
-              'MacroTemplate/validateDateFields': 'error'
+              'MacroTemplate/validateDateFields': 'error',
+              'MacroTemplate/validateBooleanFields': 'error'
             }
           });
 
