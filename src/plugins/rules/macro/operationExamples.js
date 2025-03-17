@@ -5,7 +5,7 @@ function operationExamples() {
     Operation: {
       enter(operation, ctx) {
 
-        // Validate RequestBody Examples
+        // Validate RequestBody Examples (Supports application/json & multipart/form-data)
         if (operation.requestBody) {
           validateRequestBodyExamples(operation, ctx);
         }
@@ -24,13 +24,20 @@ function operationExamples() {
  */
 function validateRequestBodyExamples(operation, ctx) {
   const content = operation.requestBody.content;
-  if (!content || !content["application/json"] || !content["application/json"].examples) {
-    reportMissingExamples(ctx, "requestBody", true);
-    return;
-  }
+  if (!content) return;
 
-  const examples = content["application/json"].examples;
-  checkExamples(examples, ctx, "requestBody");
+  const contentTypes = ["application/json", "multipart/form-data"];
+  
+  contentTypes.forEach((type) => {
+    if (content[type]) {
+      if (!content[type].examples) {
+        reportMissingExamples(ctx, `requestBody (${type})`, true);
+        return;
+      }
+      const examples = content[type].examples;
+      checkExamples(examples, ctx, `requestBody (${type})`);
+    }
+  });
 }
 
 /**
@@ -42,13 +49,21 @@ function validateResponseExamples(operation, ctx) {
   Object.entries(operation.responses).forEach(([statusCode, response]) => {
     if (!successStatusCodes.includes(statusCode)) return; // Ignore error responses
 
-    if (!response.content || !response.content["application/json"] || !response.content["application/json"].examples) {
-      reportMissingExamples(ctx, `responses.${statusCode}`, true);
-      return;
-    }
+    if (!response.content) return;
 
-    const examples = response.content["application/json"].examples;
-    checkExamples(examples, ctx, `responses.${statusCode}`);
+    const contentTypes = ["application/json", "multipart/form-data"];
+
+    contentTypes.forEach((type) => {
+      if (response.content[type]) {
+        if (!response.content[type].examples) {
+          reportMissingExamples(ctx, `responses.${statusCode} (${type})`, true);
+          return;
+        }
+
+        const examples = response.content[type].examples;
+        checkExamples(examples, ctx, `responses.${statusCode} (${type})`);
+      }
+    });
   });
 }
 
