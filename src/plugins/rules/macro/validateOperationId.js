@@ -4,18 +4,12 @@ function validateOperationId() {
   return {
     Operation: {
       enter(operation, ctx) {
-        if (!operation.operationId) {
-          return; // Skip if operationId is missing
-        }
+        if (!operation.operationId) return;
 
-        // Extract HTTP method from context
-        const httpMethod = getHttpMethod(ctx);
-        if (!httpMethod) {
-          return; // Skip if method can't be determined
-        }
+        const httpMethod = ctx.key?.toLowerCase(); // ← This safely extracts the HTTP method
+        if (!httpMethod) return;
 
-        // Ensure operationId starts with the HTTP method
-        if (!operation.operationId.startsWith(httpMethod + "-")) {
+        if (!operation.operationId.startsWith(`${httpMethod}-`)) {
           const jsonPointer = ctx.location.child(["operationId"]).pointer.replace(/~1/g, "/");
 
           ctx.report({
@@ -26,18 +20,4 @@ function validateOperationId() {
       }
     }
   };
-}
-
-/**
- * Extracts the HTTP method from `ctx.parent` safely.
- */
-function getHttpMethod(ctx) {
-  if (!ctx.parent || typeof ctx.parent !== "object") {
-    return null;
-  }
-
-  const possibleMethods = ["get", "post", "put", "patch", "delete", "options", "head", "trace"];
-  const method = Object.keys(ctx.parent).find((key) => possibleMethods.includes(key.toLowerCase()));
-
-  return method ? method.toLowerCase() : null;
 }
