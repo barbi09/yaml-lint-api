@@ -35,7 +35,7 @@ function validateSchemaProperties(ctx, schemaName, schema) {
   Object.entries(schema.properties).forEach(([propertyName, propertySchema]) => {
 
     // 🔍 Skip validation for fields starting with "is-"
-    if (propertyName.startsWith("is-")) {
+    if (propertyName.startsWith("is-") || propertyName.startsWith("flag-") ) {
         return;
       }
       
