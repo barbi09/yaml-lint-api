@@ -11,6 +11,7 @@ const validateFlagFields = require('../plugins/rules/macro/validateFlagFields.js
 const validateIntegerFields = require('../plugins/rules/macro/validateIntegerFields.js');
 const validateStringFields = require('../plugins/rules/macro/validateStringFields.js');
 const validateInfoData = require('../plugins/rules/macro/validateInfoData.js');
+const validateRequestIdHeader = require('../plugins/rules/macro/validateRequestIdHeader.js');
 
 export async function validateYamlContent(yamlContent: string) {
     try {
@@ -34,7 +35,8 @@ export async function validateYamlContent(yamlContent: string) {
                     validateFlagFields: validateFlagFields,
                     validateIntegerFields: validateIntegerFields,
                     validateStringFields: validateStringFields,
-                    validateInfoData: validateInfoData
+                    validateInfoData: validateInfoData,
+                    validateRequestIdHeader: validateRequestIdHeader
                   }
                 }
               }
@@ -54,7 +56,8 @@ export async function validateYamlContent(yamlContent: string) {
               'MacroTemplate/validateFlagFields': 'error',
               'MacroTemplate/validateIntegerFields': 'error',
               'MacroTemplate/validateStringFields': 'error',
-              'MacroTemplate/validateInfoData': 'error'
+              'MacroTemplate/validateInfoData': 'error',
+              'MacroTemplate/validateRequestIdHeader': 'error'
             }
           });
 
