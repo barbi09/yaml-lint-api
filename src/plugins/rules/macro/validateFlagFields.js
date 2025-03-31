@@ -33,7 +33,7 @@ function validateFlagFields() {
   };
 }
 
-function validateSchemaProperties(ctx, schemaName, schema, rootCtx) {
+function validateSchemaProperties(ctx, schemaName, schema) {
   if (!schema || typeof schema !== "object" || schema.$ref) return;
 
   const properties = schema.properties;
@@ -43,9 +43,9 @@ function validateSchemaProperties(ctx, schemaName, schema, rootCtx) {
     if (propertyName.startsWith("flag-")) {
       const hasEnum =
         isEnumDefined(propertySchema) ||
-        checkCompositeForEnum(propertySchema, rootCtx, "allOf") ||
-        checkCompositeForEnum(propertySchema, rootCtx, "oneOf") ||
-        checkCompositeForEnum(propertySchema, rootCtx, "anyOf");
+        checkCompositeForEnum(propertySchema, ctx, "allOf") ||
+        checkCompositeForEnum(propertySchema, ctx, "oneOf") ||
+        checkCompositeForEnum(propertySchema, ctx, "anyOf");
 
       if (!hasEnum) {
         ctx.report({
@@ -57,7 +57,7 @@ function validateSchemaProperties(ctx, schemaName, schema, rootCtx) {
 
     // Recurse into nested objects
     if (propertySchema.type === "object") {
-      validateSchemaProperties(ctx, `${schemaName} -> ${propertyName}`, propertySchema, rootCtx);
+      validateSchemaProperties(ctx, `${schemaName} -> ${propertyName}`, propertySchema);
     }
   }
 }
@@ -68,12 +68,11 @@ function isEnumDefined(schema) {
 
 function checkCompositeForEnum(schema, ctx, key) {
   if (!Array.isArray(schema[key])) return false;
-
   return schema[key].some(sub => {
     if (sub.$ref){
       const refPath = sub.$ref.replace(/^#\/components\/schemas\//, "");
       // 💡 Ignore ctx.resolve(). Go directly to the actual schema
-      const schemaNode = ctx.rawNode?.schemas?.[refPath];
+      const schemaNode = ctx?.rawNode?.schemas?.[refPath];
       return schemaNode && isEnumDefined(schemaNode);
     }  
   return isEnumDefined(sub);    
