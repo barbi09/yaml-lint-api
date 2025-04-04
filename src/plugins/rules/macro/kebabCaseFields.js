@@ -2,6 +2,31 @@ module.exports = kebabCaseFields;
 
 function kebabCaseFields() {
   return {
+    Root: {
+      enter(root, ctx) {
+        // Validate servers[*].url
+        if (Array.isArray(root.servers)) {
+          root.servers.forEach((server, index) => {
+            const url = server.url;
+            if (typeof url === 'string' && !isKebabCasePath(url)) {
+              ctx.report({
+                message: `Server URL must be in kebab-case: '${url}'`,
+                location: ctx.location.child(['servers', index, 'url']),
+              });
+            }
+          });
+        }
+
+        // Validate info.x-ns-path (if defined)
+        const xNsPath = root.info?.['x-ns-path'];
+        if (typeof xNsPath === 'string' && !isKebabCasePath(xNsPath)) {
+          ctx.report({
+            message: `The 'x-ns-path' must be in kebab-case: '${xNsPath}'`,
+            location: ctx.location.child(['info', 'x-ns-path']),
+          });
+        }
+      }
+    },
     Parameter: {
       enter(parameter, ctx) {
         if (parameter.name && !isKebabCase(parameter.name)) {
@@ -31,6 +56,7 @@ function kebabCaseFields() {
           });
         }
       }
+
   };
 }
 
@@ -80,4 +106,10 @@ function validateSchemaProperties(ctx, schemaName, schema) {
  */
 function isKebabCase(str) {
   return /^[a-z0-9]+(-[a-z0-9]+)*$/.test(str);
+}
+
+function isKebabCasePath(path) {
+  // Validates paths like /v1/customer/personal or /v1/my-data/another-one
+  const kebabCasePathRegex = /^\/[a-z0-9\-\/]*$/;
+  return kebabCasePathRegex.test(path);
 }
