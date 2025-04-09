@@ -34,11 +34,11 @@ function validateSchemaProperties(ctx, schemaName, schema) {
 
   Object.entries(schema.properties).forEach(([propertyName, propertySchema]) => {
     // 🔍 Check if the field is a boolean
-    if (propertySchema.type === "boolean" && !propertyName.startsWith("is-")) {
+    if (propertySchema.type === "boolean" && (!propertyName.startsWith("is-") && !propertyName.startsWith("has-"))) {
       const jsonPointer = ctx.location.child(["schemas", schemaName, "properties", propertyName]).pointer.replace(/~1/g, "/");
       
       ctx.report({
-        message: `Boolean field '${propertyName}' in schema '${schemaName}' must start with 'is-'.`,
+        message: `Boolean field '${propertyName}' in schema '${schemaName}' must start with 'is-' or 'has-'.`,
         location: { pointer: jsonPointer },
       });
     }
