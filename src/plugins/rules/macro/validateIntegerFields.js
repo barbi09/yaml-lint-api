@@ -33,7 +33,8 @@ function validateSchema(ctx, schema, pointerPath) {
 
     const schemaName = pointerPath?.[1]; 
     const isResponseSchema = typeof schemaName === "string" && schemaName.toLowerCase().includes("response");
-    if (isResponseSchema && schema.nullable !== true) {
+
+    if (isResponseSchema &&  schema.enum === undefined && schema.nullable !== true) {
       ctx.report({
         message: `Integer fields in responses must be 'nullable: true'.`,
         location: { pointer: ctx.location.child(pointerPath).pointer }
